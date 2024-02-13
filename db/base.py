@@ -1,5 +1,6 @@
 import sqlite3
 from pathlib import Path
+from pprint import pprint
 
 
 class DB:
@@ -34,11 +35,18 @@ class DB:
         ''')
         self.connection.commit()
 
+    def get_courses(self):
+        '''Получение курсов'''
+        self.cursor.execute('SELECT * FROM courses')
+        return self.cursor.fetchall()
+        # return self.cursor.fetchone()
+    
 
 if __name__ == "__main__":
     db = DB()
     db.create_tables()
     db.populate_tables()
+    pprint(db.get_courses())
 
 # СУБД - Система Управления Базами Данных
 # MySQL, PostgreSQL, SQLite, Oracle, MsSQL
