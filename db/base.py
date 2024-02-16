@@ -22,6 +22,16 @@ class DB:
                 image TEXT
             )
         ''')
+        self.cursor.execute('DROP TABLE IF EXISTS teachers')
+        self.cursor.execute('''
+            CREATE TABLE teachers (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                course_id INTEGER,
+                FOREIGN KEY (course_id) REFERENCES courses(id)
+            )
+        ''')
+
 
     def populate_tables(self):
         '''Заполнение таблиц'''
@@ -33,21 +43,98 @@ class DB:
             ("IOs", "IOs - это ...", 6, "images/ios.jpg"),
             ("Тестирование", "Тестирование - это ...", 4, "images/testing.jpg")
         ''')
+        self.cursor.execute('''
+            INSERT INTO teachers (name, course_id) VALUES 
+                ('Нурлан', 1),
+                ('Алексей', 1),
+                ('Бекболот', 1),
+                ('Атай', 2),
+                ('Игорь', 2)
+        ''')
         self.connection.commit()
 
     def get_courses(self):
         '''Получение курсов'''
-        self.cursor.execute('SELECT * FROM courses')
+        # пропустить пераы 2 курса и показать следующие 2
+        self.cursor.execute('SELECT id, name FROM courses LIMIT 2 OFFSET 2')
+        # self.cursor.execute('SELECT id, name FROM courses')
         return self.cursor.fetchall()
         # return self.cursor.fetchone()
     
+    def get_course_by_id(self, course_id):
+        # course_id = "1; DROP DATABASE test;"
+        '''Получение курса по ID'''
+        self.cursor.execute(
+            'SELECT * FROM courses WHERE id = :id', 
+            {'id': course_id}
+        )
+        return self.cursor.fetchone()
+
+    def get_course_by_name(self, course_name):
+        '''Получение курса по названию'''
+        self.cursor.execute(
+            'SELECT * FROM courses WHERE name = :name', 
+            {'name': course_name}
+        )
+        return self.cursor.fetchone()
+
+    def get_teachers_by_course_id(self):
+        '''Получение преподавателей'''
+        self.cursor.execute(
+            'SELECT * FROM teachers WHERE course_id = 1'
+        )
+        return self.cursor.fetchall()
+    
+
+    def get_all_teacher_with_courses(self):
+        '''Получение преподавателей с названиями курсов'''
+        self.cursor.execute('''
+            SELECT t.name, c.name FROM teachers AS t
+            JOIN courses AS c ON t.course_id = c.id
+        ''')
+        return self.cursor.fetchall()
+
+    def get_teachers_by_course_name(self, course_name):
+        '''Получение преподавателей с названиями курсов'''
+        self.cursor.execute('''
+            SELECT t.name, c.name FROM teachers AS t
+            JOIN courses AS c ON t.course_id = c.id
+            WHERE c.name = :name
+        ''',
+        {'name': course_name}
+        )
+        return self.cursor.fetchall()
+
 
 if __name__ == "__main__":
     db = DB()
     db.create_tables()
     db.populate_tables()
-    pprint(db.get_courses())
+    # pprint(db.get_courses())
+    # pprint(db.get_course_by_id(3))
+    # pprint(db.get_course_by_name('Frontend'))
+    # pprint(db.get_teachers_by_course_id())
+    # pprint(db.get_all_teacher_with_courses())
+    pprint(db.get_teachers_by_course_name("Backend"))
 
 # СУБД - Система Управления Базами Данных
 # MySQL, PostgreSQL, SQLite, Oracle, MsSQL
 # PRIMARY KEY - первичный ключ
+
+# Реляционные БД - realtional - связи
+
+# Курс
+# id, name, description, duration, image
+# 1, "Backend", "Бекенд - это ...", 5, "images/backend.jpg"
+# 2, "Frontend", "Фронтенд - это ...", 5, "images/frontend.jpg"
+# 3, "Android", "Android - это ...", 6, "images/android.jpg"
+
+# Преподаватель
+# id, name, course_id
+# 1, "Нурлан", 1
+# 2, "Алексей", 1
+# 3, "Игорь", 2
+# 4, "Бекболот", 1
+# 5, "Атай", 2
+
+# FOREIGN KEY - внешние ключи
