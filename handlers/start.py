@@ -23,6 +23,6 @@ async def start_command(message: types.Message):
 
 
 @start_router.callback_query(F.data == "about_us")
-async def show_about_us(cb: types.cbQuery):
+async def show_about_us(cb: types.CallbackQuery):
     await cb.answer()
     await cb.message.answer("Что-то о нас")

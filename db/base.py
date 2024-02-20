@@ -31,6 +31,18 @@ class DB:
                 FOREIGN KEY (course_id) REFERENCES courses(id)
             )
         ''')
+        
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS free_lesson_registration (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                age INTEGER,
+                email TEXT,
+                course TEXT,
+                telegram_id INTEGER
+            )
+        ''')
+        self.connection.commit()
 
 
     def populate_tables(self):
@@ -85,7 +97,6 @@ class DB:
         )
         return self.cursor.fetchall()
     
-
     def get_all_teacher_with_courses(self):
         '''Получение преподавателей с названиями курсов'''
         self.cursor.execute('''
@@ -105,6 +116,23 @@ class DB:
         )
         return self.cursor.fetchall()
 
+    def save_free_lesson_data(self, data: dict, tg_id: int):
+        name = 'igor'
+        '''Сохранение данных о записи на бесплатный урок'''
+        print(data)
+        self.cursor.execute('''
+            INSERT INTO free_lesson_registration (name, age, email, course, telegram_id) 
+            VALUES (:name, :age, :email, :course, :telegram_id);
+            ''',
+            {
+                'name': data['name'],
+                'age': int(data['age']),
+                'email': data['email'],
+                'course': data['course'],
+                'telegram_id': tg_id
+            }
+        )
+        self.connection.commit()
 
 if __name__ == "__main__":
     db = DB()

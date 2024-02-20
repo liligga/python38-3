@@ -4,6 +4,7 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
 from keyboards.free_lesson_courses_kb import free_lesson_courses_kb
+from bot import db
 
 
 # FSM - Finite State Machine, конечный автомат
@@ -64,5 +65,8 @@ async def process_course(message: types.Message, state: FSMContext):
     await message.answer("Спасибо", reply_markup=remove_kb)
     data = await state.get_data()
     # save to DataBase
+    
+    db.save_free_lesson_data(data, message.from_user.id)
+    # чистим состояние
     await message.answer(f"Ваши дданные: {data}")
     await state.clear()

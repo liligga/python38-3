@@ -45,6 +45,11 @@ SELECT t.name, c.name FROM courses AS t
 JOIN teacher AS c ON t.course_id = c.id
 WHERE c.id = 1;
 
+-- Сохранение результата опросника в базу данных
+INSERT INTO free_lesson_registration (name, age, email, course, telegram_id) 
+VALUES ('Igor', 25, '1@2.com', 'Python', 1234);
+
+
 
 
 
