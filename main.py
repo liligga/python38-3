@@ -8,7 +8,8 @@ from handlers import (
     echo_router,
     courses_router,
     free_lesson_reg_router,
-    scheduled_message_router
+    scheduled_message_router,
+    group_admin_router
 )
 
 
@@ -20,6 +21,7 @@ async def on_startup(bot: Bot):
 async def main():
     await set_commands()
     # добавляем роутеры
+    dp.include_router(group_admin_router)
     dp.include_router(start_router)
     dp.include_router(picture_router)
     dp.include_router(courses_router)
